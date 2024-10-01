@@ -1,11 +1,10 @@
 streamlit
 pandas
 numpy>=2.0
-pyarrow
-rich
 plotly
 matplotlib
 seaborn
+rich
 Unidecode
 httpx
 loguru
