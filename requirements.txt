@@ -1,0 +1,10 @@
+streamlit
+pandas
+pyarrow
+rich
+plotly
+matplotlib
+seaborn
+Unidecode
+httpx
+loguru

@@ -1,2 +1,2 @@
 build:
-	@docker compose build
+	@docker build -t hersonpc/hdt-dashboard:latest .
