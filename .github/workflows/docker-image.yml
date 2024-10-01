@@ -3,26 +3,32 @@ name: Build and Push Docker Image (Multi-Arch)
 on:
   push:
     branches:
-      - main  # Rodar o workflow quando houver push na branch "main"
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout do código no repositório
+    # Checkout do código
     - name: Checkout code
       uses: actions/checkout@v2
+
+    # Configurar QEMU para suportar múltiplas arquiteturas
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      with:
+        platforms: all
 
     # Configurar Docker Buildx
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    # Logar no Docker Hub usando o Personal Access Token
+    # Logar no Docker Hub
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-    # Configurar o Build para múltiplas arquiteturas
+    # Build e push da imagem Docker para múltiplas plataformas
     - name: Build and push Docker image for multiple platforms
       run: |
         docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
