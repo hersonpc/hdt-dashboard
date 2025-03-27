@@ -9,3 +9,9 @@ Código base para o desenvolvimento de um dashboard em Python utilizando o Strea
 ```bash
 docker build -t hersonpc/hdt-dashboard:latest .
 ```
+
+## Pull
+
+```bash
+docker pull hersonpc/hdt-dashboard:latest
+```

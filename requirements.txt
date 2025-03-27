@@ -8,3 +8,8 @@ rich
 Unidecode
 httpx
 loguru
+bcrypt
+pyotp
+python-dotenv
+lorem-text
+
