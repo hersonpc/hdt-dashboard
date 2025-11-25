@@ -9,3 +9,7 @@ img:
 
 prune:
 	@docker image prune -f
+
+push:
+	@docker push hersonpc/hdt-dashboard:latest && \
+	echo "\n- https://hub.docker.com/r/hersonpc/hdt-dashboard/tags\n"

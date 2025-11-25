@@ -7,6 +7,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Instala as dependências globalmente
+ENV UV_HTTP_TIMEOUT=120
 RUN uv pip install --system --no-cache-dir -r requirements.txt
 
 
