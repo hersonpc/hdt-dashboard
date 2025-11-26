@@ -1,12 +1,13 @@
 # Etapa build
 FROM python:3.12-slim AS builder
 
-RUN pip install --no-cache-dir uv
+# Atualiza pip antes de instalar pacotes
+RUN pip install --no-cache-dir --upgrade pip uv
 
 WORKDIR /app
 COPY requirements.txt .
 
-# Instala as dependências globalmente
+# Instala as dependencias globalmente
 ENV UV_HTTP_TIMEOUT=120
 RUN uv pip install --system --no-cache-dir -r requirements.txt
 
@@ -14,12 +15,32 @@ RUN uv pip install --system --no-cache-dir -r requirements.txt
 # Etapa final
 FROM python:3.12-slim
 
-# Variáveis de ambiente para melhor comportamento do Python
+# Metadata
+LABEL maintainer="hersonpc" \
+      version="1.0" \
+      description="HDT Dashboard - Streamlit infrastructure"
+
+# Timezone e Locale
+ENV TZ=America/Sao_Paulo \
+    LANG=pt_BR.UTF-8 \
+    LC_ALL=pt_BR.UTF-8
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tzdata \
+    locales \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && sed -i '/pt_BR.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Variaveis de ambiente para Python
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-# Copia as dependências da imagem de build
+# Copia as dependencias da imagem de build
 COPY --from=builder /usr/local /usr/local
 
-# Cria diretório da aplicação
+# Cria diretorio da aplicacao
 WORKDIR /app
