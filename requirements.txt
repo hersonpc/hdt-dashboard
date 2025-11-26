@@ -19,3 +19,4 @@ streamlit-authenticator
 openpyxl
 pyarrow
 altair
+redis>=7.1.0

@@ -6,7 +6,7 @@ Docker image for dashboard infrastructure and data visualization with Python and
 
 ## Packages
 
-Revisao: 2025-11-25
+Revisao: 2025-11-26
 
 | Pacote | Versao | Descricao |
 |--------|--------|-----------|
@@ -17,6 +17,7 @@ Revisao: 2025-11-25
 | seaborn | 0.13.2 | Visualizacao estatistica |
 | pandas | 2.3.3 | Manipulacao de dados |
 | sqlalchemy | 2.0.44 | Conexao com bancos de dados |
+| redis | 7.1.0 | Cliente Redis para cache |
 | streamlit-extras | 0.7.8 | Componentes extras para Streamlit |
 | streamlit-authenticator | 0.4.2 | Autenticacao de usuarios |
 | openpyxl | 3.1.5 | Leitura/escrita de arquivos Excel |
