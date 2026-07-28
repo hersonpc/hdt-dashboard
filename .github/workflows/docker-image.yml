@@ -18,7 +18,12 @@ jobs:
         run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
       - name: Build Docker image
-        run: docker build -t hersonpc/hdt-dashboard:latest .
+        run: |
+          docker build \
+            --build-arg VERSION="$(date +%Y-%m-%d)" \
+            --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --build-arg VCS_REF="${GITHUB_SHA::7}" \
+            -t hersonpc/hdt-dashboard:latest .
 
       # Confere que a imagem sobe e que os pacotes compilados carregam,
       # antes de publicar. Falha aqui interrompe o push.
@@ -36,3 +41,16 @@ jobs:
       # sao locais e servem so para retornar a uma construcao anterior na maquina.
       - name: Push Docker image
         run: docker push hersonpc/hdt-dashboard:latest
+
+      # Publica o README como descricao da imagem no Docker Hub.
+      # Exige token com escopo read/write/delete. Se o escopo nao permitir,
+      # o passo falha sozinho sem derrubar a publicacao da imagem.
+      - name: Atualizar descricao no Docker Hub
+        uses: peter-evans/dockerhub-description@v5
+        continue-on-error: true
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          repository: hersonpc/hdt-dashboard
+          short-description: "Imagem base para os paineis Streamlit do HDT"
+          enable-url-completion: true
