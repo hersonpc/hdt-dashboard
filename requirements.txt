@@ -1,6 +1,6 @@
 streamlit>=1.51.0
-pandas>=2.3.3
-numpy>=2.3.5
+pandas>=3.0.0
+numpy>=2.5.0
 plotly>=6.5.0
 matplotlib>=3.10.7
 seaborn>=0.13.2
@@ -20,3 +20,7 @@ openpyxl
 pyarrow
 altair
 redis>=7.1.0
+
+# pytz deixou de ser dependencia do pandas na versao 3.0. Como ha codigo que
+# faz import pytz diretamente, ele passa a ser declarado aqui.
+pytz>=2025.2

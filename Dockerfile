@@ -1,23 +1,25 @@
 # Etapa build
-FROM python:3.12-slim AS builder
+FROM python:3.14-slim AS builder
 
 # Atualiza pip antes de instalar pacotes
 RUN pip install --no-cache-dir --upgrade pip uv
 
 WORKDIR /app
-COPY requirements.txt .
 
-# Instala as dependencias globalmente
+# Instala a partir do arquivo de versoes fixadas (requirements.lock.txt).
+# Para atualizar as versoes: make lock, revisar o diff, make build.
+COPY requirements.lock.txt .
+
 ENV UV_HTTP_TIMEOUT=120
-RUN uv pip install --system --no-cache-dir -r requirements.txt
+RUN uv pip install --system --no-cache-dir -r requirements.lock.txt
 
 
 # Etapa final
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Metadata
 LABEL maintainer="hersonpc" \
-      version="1.0" \
+      version="2.0" \
       description="HDT Dashboard - Streamlit infrastructure"
 
 # Timezone e Locale

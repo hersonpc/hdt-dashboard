@@ -4,26 +4,45 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout do código
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Logar no Docker Hub
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+      # A tag datada identifica a construcao e permite voltar atras.
+      # O latest e movido junto, porque e ele que os compose dos paineis usam.
+      - name: Definir tags
+        id: tags
+        run: echo "date=$(date +%Y-%m-%d)-py314" >> "$GITHUB_OUTPUT"
 
-    # Build da imagem Docker
-    - name: Build Docker image
-      run: |
-        docker build -t hersonpc/hdt-dashboard:latest .
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-    # Push da imagem Docker para o Docker Hub
-    - name: Push Docker image
-      run: |
-        docker push hersonpc/hdt-dashboard:latest
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t hersonpc/hdt-dashboard:${{ steps.tags.outputs.date }} \
+            -t hersonpc/hdt-dashboard:latest \
+            .
+
+      # Confere que a imagem sobe e que os pacotes compilados carregam,
+      # antes de publicar. Falha aqui interrompe o push.
+      - name: Verificar a imagem
+        run: |
+          docker run --rm hersonpc/hdt-dashboard:latest python -c "
+          import numpy, pandas, streamlit, pyarrow, matplotlib, pytz
+          print('python  ', __import__('sys').version.split()[0])
+          print('numpy   ', numpy.__version__)
+          print('pandas  ', pandas.__version__)
+          print('streamlit', streamlit.__version__)
+          "
+
+      - name: Push Docker image
+        run: |
+          docker push hersonpc/hdt-dashboard:${{ steps.tags.outputs.date }}
+          docker push hersonpc/hdt-dashboard:latest
