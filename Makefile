@@ -10,7 +10,9 @@ lock:
 		sh -c "pip install -q uv && uv pip compile requirements.txt -o requirements.lock.txt --no-header && chown $(UID):$(GID) requirements.lock.txt"
 	@echo "requirements.lock.txt atualizado. Revise com: git diff requirements.lock.txt"
 
-# Constroi a imagem com tag datada. Nao altera :latest.
+# Constroi a imagem com tag datada, apenas local, e nao altera :latest.
+# A tag datada existe para permitir voltar a uma construcao anterior nesta
+# maquina. Ela nunca vai para o Docker Hub.
 build:
 	@time docker build -t $(IMAGE):$(TAG) . && docker images | grep $(IMAGE)
 
@@ -20,13 +22,13 @@ promote:
 	@docker tag $(IMAGE):$(TAG) $(IMAGE):latest
 	@echo "latest agora aponta para $(TAG)"
 
+# Publica SOMENTE a tag latest. Nenhuma outra tag e enviada ao Docker Hub.
+push:
+	@docker push $(IMAGE):latest
+	@echo "\n- https://hub.docker.com/r/hersonpc/hdt-dashboard/tags\n"
+
 img:
 	@docker images | grep hdt-dashboard
 
 prune:
 	@docker image prune -f
-
-push:
-	@docker push $(IMAGE):$(TAG) && \
-	docker push $(IMAGE):latest && \
-	echo "\n- https://hub.docker.com/r/hersonpc/hdt-dashboard/tags\n"

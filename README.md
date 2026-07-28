@@ -62,11 +62,14 @@ o `latest`**. Mover o `latest` é um passo separado e explícito, para que nenhu
 construção troque a imagem de produção sem querer.
 
 ```bash
-make build      # constrói hersonpc/hdt-dashboard:<data>-py314
+make build      # constrói hersonpc/hdt-dashboard:<data>-py314, apenas local
 make promote    # aponta o latest para essa tag
-make push       # envia a tag datada e o latest para o Docker Hub
+make push       # envia SOMENTE o latest para o Docker Hub
 make img        # lista as imagens locais
 ```
+
+O Docker Hub recebe apenas a tag `latest`. As tags datadas existem só nesta
+máquina, para permitir voltar a uma construção anterior, e nunca são publicadas.
 
 Para construir uma tag específica:
 
