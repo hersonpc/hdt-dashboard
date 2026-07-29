@@ -9,7 +9,10 @@ RUN pip install --no-cache-dir uv
 
 ENV UV_HTTP_TIMEOUT=120
 
-RUN uv venv /opt/venv
+# O --seed instala pip e setuptools dentro do venv, cerca de 7 MB, para permitir
+# instalar um pacote em tempo de execucao durante uma investigacao, sem precisar
+# reconstruir a imagem. O uv em si continua fora da imagem final.
+RUN uv venv --seed /opt/venv
 ENV VIRTUAL_ENV=/opt/venv \
     PATH="/opt/venv/bin:$PATH"
 
