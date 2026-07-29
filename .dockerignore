@@ -1,0 +1,27 @@
+# O contexto de build precisa apenas do requirements.lock.txt.
+# Tudo abaixo fica de fora para manter o cache estavel entre commits.
+
+.git
+.github
+.gitignore
+.dockerignore
+
+README.md
+Makefile
+requirements.txt
+
+# Ambientes e cache
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Segredos
+.env
+*.env
+*.pem
+*.key
+
+# Lixo de sistema
+.DS_Store
+._*

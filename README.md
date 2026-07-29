@@ -9,10 +9,10 @@ usam esta imagem, então uma mudança aqui alcança todos eles de uma vez.
 
 | Item | Versão |
 |------|--------|
-| Imagem base | `python:3.14-slim` |
+| Imagem base | `python:3.14-alpine` |
 | Python | 3.14 |
 | Timezone | America/Sao_Paulo |
-| Locale | pt_BR.UTF-8 |
+| Locale | C.UTF-8, datas em portugues via Babel |
 
 ## Pacotes
 
@@ -35,6 +35,7 @@ Revisão: 2026-07-28
 | openpyxl | 3.1.5 | Leitura e escrita de arquivos Excel |
 | wordcloud | 1.9.6 | Geração de nuvens de palavras |
 | httpx | 0.28.1 | Cliente HTTP async |
+| babel | 2.18.0 | Datas e números em português, sem depender do locale do sistema |
 | pytz | 2026.3 | Timezones. Deixou de vir junto com o pandas 3.0, por isso é declarado |
 
 A lista completa, com as 77 dependências resolvidas e suas versões exatas, está em

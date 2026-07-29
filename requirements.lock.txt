@@ -11,6 +11,8 @@ attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
+babel==2.18.0
+    # via -r requirements.txt
 bcrypt==5.0.0
     # via
     #   -r requirements.txt

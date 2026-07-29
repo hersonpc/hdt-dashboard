@@ -21,6 +21,11 @@ pyarrow
 altair
 redis>=7.1.0
 
+# O locale do sistema nao traduz nomes de mes em Python sem uma chamada explicita
+# de setlocale, e o musl do Alpine nao oferece locales no formato do glibc. O Babel
+# formata datas em portugues pelo proprio Python, sem depender do sistema operacional.
+Babel>=2.17
+
 # pytz deixou de ser dependencia do pandas na versao 3.0. Como ha codigo que
 # faz import pytz diretamente, ele passa a ser declarado aqui.
 pytz>=2025.2

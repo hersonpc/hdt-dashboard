@@ -1,48 +1,54 @@
-# Etapa build
-FROM python:3.14-slim AS builder
+# Base Alpine. A base Debian carregava 165 vulnerabilidades sem correcao
+# disponivel, sendo 4 criticas e 19 altas, herdadas de perl-base e tar, que sao
+# pacotes essenciais e nao removiveis. A base Alpine nao apresenta nenhuma.
 
-# Atualiza pip antes de instalar pacotes
-RUN pip install --no-cache-dir --upgrade pip uv
+FROM python:3.14-alpine AS builder
 
-WORKDIR /app
-
-# Instala a partir do arquivo de versoes fixadas (requirements.lock.txt).
-# Para atualizar as versoes: make lock, revisar o diff, make build.
-COPY requirements.lock.txt .
+# O uv fica so nesta etapa. A etapa final recebe apenas o ambiente virtual.
+RUN pip install --no-cache-dir uv
 
 ENV UV_HTTP_TIMEOUT=120
-RUN uv pip install --system --no-cache-dir -r requirements.lock.txt
+
+RUN uv venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.lock.txt .
+RUN uv pip install --no-cache -r requirements.lock.txt
 
 
-# Etapa final
-FROM python:3.14-slim
+FROM python:3.14-alpine
 
-# Metadata
-LABEL maintainer="hersonpc" \
-      version="2.0" \
-      description="HDT Dashboard - Streamlit infrastructure"
+ARG VERSION=dev
+ARG BUILD_DATE
+ARG VCS_REF
 
-# Timezone e Locale
+LABEL org.opencontainers.image.title="HDT Dashboard" \
+      org.opencontainers.image.description="Imagem base para os paineis Streamlit do HDT" \
+      org.opencontainers.image.authors="hersonpc" \
+      org.opencontainers.image.source="https://github.com/hersonpc/hdt-dashboard" \
+      org.opencontainers.image.url="https://hub.docker.com/r/hersonpc/hdt-dashboard" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version="$VERSION" \
+      org.opencontainers.image.created="$BUILD_DATE" \
+      org.opencontainers.image.revision="$VCS_REF"
+
+# O musl nao oferece locales no formato do glibc. Nenhum painel chama
+# locale.setlocale, entao C.UTF-8 basta para manter a leitura de arquivos
+# em UTF-8. O fuso horario continua vindo do tzdata.
 ENV TZ=America/Sao_Paulo \
-    LANG=pt_BR.UTF-8 \
-    LC_ALL=pt_BR.UTF-8
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    tzdata \
-    locales \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
-    && sed -i '/pt_BR.UTF-8/s/^# //g' /etc/locale.gen \
-    && locale-gen \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache tzdata \
+    && cp /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
 
-# Variaveis de ambiente para Python
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-# Copia as dependencias da imagem de build
-COPY --from=builder /usr/local /usr/local
+COPY --from=builder /opt/venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
 
-# Cria diretorio da aplicacao
 WORKDIR /app

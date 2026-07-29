@@ -6,7 +6,7 @@ GID   := $(shell id -g)
 # Regenera requirements.lock.txt a partir de requirements.txt.
 # Fluxo para atualizar versoes: make lock, revisar o diff, make build.
 lock:
-	@docker run --rm -v $(CURDIR):/w -w /w python:3.14-slim \
+	@docker run --rm -v $(CURDIR):/w -w /w python:3.14-alpine \
 		sh -c "pip install -q uv && uv pip compile requirements.txt -o requirements.lock.txt --no-header && chown $(UID):$(GID) requirements.lock.txt"
 	@echo "requirements.lock.txt atualizado. Revise com: git diff requirements.lock.txt"
 
